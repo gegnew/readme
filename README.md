@@ -17,6 +17,14 @@ https://cloud.rlr-eu-dev.relayr.io/devices/47e99bc4-6a52-4312-af71-247ab3d8c61e/
 'Authorization: bearer 2701a7b36c26445fa2db65f09039980f'
 ```
 
+## relayr AWS accounts
+account: 189709606833
+role: developers
+display name: rlr-eu-dev
+
+account: 339265221855
+display name: rlr-eu-stg
+
 # datetime reference
 
 Local to ISO 8601:
@@ -75,3 +83,28 @@ Run docker for the workflow manager
 `docker run -it --network mynet --rm -p 2020:8080 -e CONSUL_HOST=http://consul:8500 -e CONSUL_HTTP_TOKEN=placeholder -e ENVIRONMENT=dev analytics-workflow-manager`
 
 Access Airflow dashboard on http://localhost:2020/admin/
+
+## more Docker stuff
+To install a local python package with `pip` to a docker container, it must be
+inside the context of the container, i.e.:
+```
+# Dockerfile
+ADD ./analytics-utils
+./analytics-utils
+RUN pip install ./analytics-utils
+```
+
+## Kafkacat
+kafkacat -C -b kafka-2.rlr-eu-dev:9092 -t device-events-analytics -f '%k\n\n%s\n\n=====\n' -X sasl.username=relayr -X sasl.password=e2bXqAJnXkehtEQRPCq7Yza5JYNfqHWatbSV4fFVw98Xo -X sasl.mechanisms=PLAIN -X security.protocol=sasl_plaintext  -X "api.version.request=true" -o -10000 -e
+
+## Hive at relayr (deprecated)
+To run tests locally, you need to tunnel from the HDFS cluster to local on both 10000 and 14000.
+`ssh gerrit.egnew@emr-hdfs.rlr-eu-dev -N -L 10000:0.0.0.0:10000`
+
+## Tools I've used
+- CrateDB
+- Spark
+- Kafka
+- Docker
+
+
